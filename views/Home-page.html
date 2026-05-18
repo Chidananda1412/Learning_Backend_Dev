@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<title>Home — My App</title>
+		<style>
+	/* Inlined responsive styles from public/css/styles.css */
+	:root{--bg:#f7f8fb;--card:#ffffff;--accent:#2563eb;--text:#0f172a;--muted:#6b7280}
+	*{box-sizing:border-box}
+	html,body{height:100%;margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif;color:var(--text);background:var(--bg)}
+	.container{max-width:1100px;margin:0 auto;padding:1rem}
+	.site-header{background:linear-gradient(90deg,#fff,#f8fafc);border-bottom:1px solid rgba(15,23,42,0.04)}
+	.header-inner{display:flex;align-items:center;justify-content:space-between;padding:0.75rem 0}
+	.brand{font-weight:700;color:var(--accent);text-decoration:none;font-size:1.125rem}
+	.nav{display:flex;gap:1rem;align-items:center}
+	.nav a{color:var(--text);text-decoration:none;padding:0.25rem 0.5rem;border-radius:6px}
+	.nav a.cta{background:var(--accent);color:#fff}
+	.nav.open{display:flex}
+	.nav-toggle{display:none;background:none;border:0;font-size:1.25rem}
+	.hero{padding:3.5rem 0}
+	.hero-inner{display:grid;grid-template-columns:1fr 360px;gap:2rem;align-items:center}
+	.hero-content h1{font-size:2rem;margin:0 0 .5rem}
+	.hero-content p{color:var(--muted);margin:0 0 1rem}
+	.hero-actions{display:flex;gap:0.75rem}
+	.btn{display:inline-block;padding:0.55rem 0.9rem;border-radius:8px;background:transparent;border:1px solid rgba(15,23,42,0.06);text-decoration:none;color:var(--text)}
+	.btn.primary{background:var(--accent);color:#fff;border:0}
+	.hero-illustration{display:flex;align-items:center;justify-content:center}
+	.phone-mock{width:220px;height:420px;border-radius:28px;background:linear-gradient(180deg,#e6eefc,#f8fbff);box-shadow:0 8px 24px rgba(15,23,42,0.08)}
+	.features{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;padding:2rem 0}
+	.feature{background:var(--card);padding:1rem;border-radius:10px;box-shadow:0 1px 0 rgba(15,23,42,0.02)}
+	.feature h3{margin:0 0 .5rem}
+	.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;padding:2rem 0}
+	.card{background:var(--card);padding:1rem;border-radius:10px}
+	.site-footer{padding:1.25rem 0;border-top:1px solid rgba(15,23,42,0.04);margin-top:2rem}
+	@media (max-width:900px){.hero-inner{grid-template-columns:1fr 280px}.features{grid-template-columns:repeat(2,1fr)}.cards{grid-template-columns:repeat(2,1fr)}}
+	@media (max-width:640px){.nav{display:none;position:absolute;right:1rem;top:64px;background:#fff;padding:0.75rem;border-radius:8px;box-shadow:0 8px 24px rgba(15,23,42,0.08);flex-direction:column}.nav-toggle{display:block}.hero-inner{grid-template-columns:1fr;gap:1.25rem}.hero-illustration{order:-1}.features{grid-template-columns:1fr}.cards{grid-template-columns:1fr}}
+	</style>
+	</head>
+	<body>
+		<header class="site-header">
+			<div class="container header-inner">
+				<a class="brand" href="/">MyApp</a>
+				<nav class="nav">
+					<a href="/">Home</a>
+					<a href="/admin">Admin</a>
+				</nav>
+				<button class="nav-toggle" aria-label="Toggle navigation">☰</button>
+			</div>
+		</header>
+
+		<main>
+			<section class="hero">
+				<div class="container hero-inner">
+					<div class="hero-content">
+						<h1>Welcome to MyApp</h1>
+						<p>Fast, simple, and responsive starter homepage for your Node.js app.</p>
+						<div class="hero-actions">
+							<a class="btn primary" href="/products">Browse Products</a>
+							<a class="btn" href="/about">Learn More</a>
+						</div>
+					</div>
+					<div class="hero-illustration" aria-hidden="true">
+						<div class="phone-mock"></div>
+					</div>
+				</div>
+			</section>
+
+			<section class="features container">
+				<article class="feature">
+					<h3>Responsive</h3>
+					<p>Layouts that work across phones, tablets, and desktops.</p>
+				</article>
+				<article class="feature">
+					<h3>Lightweight</h3>
+					<p>Minimal CSS and semantic HTML for fast load times.</p>
+				</article>
+				<article class="feature">
+					<h3>Easy to Extend</h3>
+					<p>Plug into your existing Node.js routes and templates.</p>
+				</article>
+			</section>
+
+			<section class="cards container">
+				<div class="card">
+					<h4>Product A</h4>
+					<p>Short description of Product A.</p>
+					<a class="btn" href="/admin">Manage</a>
+				</div>
+				<div class="card">
+					<h4>Product B</h4>
+					<p>Short description of Product B.</p>
+					<a class="btn" href="/admin">Manage</a>
+				</div>
+				<div class="card">
+					<h4>Product C</h4>
+					<p>Short description of Product C.</p>
+					<a class="btn" href="/admin">Manage</a>
+				</div>
+			</section>
+
+			<section class="container">
+				<h3>Add Product</h3>
+				<form action="/admin/products/add-product" method="post" style="display:flex;gap:0.5rem;flex-wrap:wrap;align-items:center">
+					<input type="text" name="title" placeholder="Title" required style="padding:0.5rem;border-radius:6px;border:1px solid #ddd" />
+					<input type="number" name="price" placeholder="Price" required style="padding:0.5rem;border-radius:6px;border:1px solid #ddd;width:120px" />
+					<button class="btn primary" type="submit">Add</button>
+				</form>
+			</section>
+		</main>
+
+		<footer class="site-footer">
+			<div class="container">
+				<p>&copy; <span id="year"></span> MyApp. All rights reserved.</p>
+			</div>
+		</footer>
+
+		<script>
+			// small script to set current year and toggle nav on mobile
+			document.getElementById('year').textContent = new Date().getFullYear();
+			const toggle = document.querySelector('.nav-toggle');
+			const nav = document.querySelector('.nav');
+			toggle && toggle.addEventListener('click', () => nav.classList.toggle('open'));
+		</script>
+	</body>
+</html>
