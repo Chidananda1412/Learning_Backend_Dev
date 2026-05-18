@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const productData = require('./productData');
 
-router.get('/admin', (req, res, next) => {
+router.get('/', (req, res, next) => {
     let productList = '<h1>Product Admin</h1>';
     productList += '<a href="/"><button>Back to Home</button></a><br><br>';
 

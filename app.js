@@ -9,8 +9,12 @@ const adminRoutes = require('./routes/admin');
 app.use(express.urlencoded({ extended: false }));
 
 app.use(homeRoutes);
-app.use(productRoutes);
-app.use(adminRoutes);
+app.use('/admin/products', productRoutes);
+app.use('/admin', adminRoutes);
+
+app.use((req, res, next) => {
+    res.status(404).send('<h1>Page Not Found</h1><a href="/"><button>Back to Home</button></a>');
+});
 
 app.listen(3000, () => {
     console.log('Server running on port 3000');
