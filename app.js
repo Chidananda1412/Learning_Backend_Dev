@@ -10,6 +10,8 @@ const rootDir = require('./views/util/path');
 // Middleware to parse form data
 app.use(express.urlencoded({ extended: false }));
 
+app.use(express.static(path.join(rootDir, 'public')));
+
 app.use(homeRoutes);
 app.use('/admin/products', productRoutes);
 app.use('/admin', adminRoutes);
