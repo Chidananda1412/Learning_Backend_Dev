@@ -1,29 +1,42 @@
-const express = require('express');
 const path = require('path');
-const app = express();
+const express = require('express');
 
-const homeRoutes = require('./routes/home');
-const productRoutes = require('./routes/products');
 const adminRoutes = require('./routes/admin');
+const shopRoutes = require('./routes/shop');
+const errorController = require('./controllers/error');
 const rootDir = require('./util/path');
 
-// Middleware to parse form data
-app.use(express.urlencoded({ extended: false }));
+const app = express();
 
-app.use(express.static(path.join(rootDir, 'public')));
-
-// Setup EJS view engine
+// ----------------------------
+// View Engine Configuration
+// ----------------------------
+// EJS is used to render dynamic HTML pages from the `views/` folder.
 app.set('view engine', 'ejs');
 app.set('views', path.join(rootDir, 'views'));
 
-app.use(homeRoutes);
-app.use('/admin/products', productRoutes);
+// ----------------------------
+// Middleware
+// ----------------------------
+// Parse incoming URL-encoded form data and make it available under req.body.
+app.use(express.urlencoded({ extended: false }));
+
+// Serve static assets from the public directory.
+app.use(express.static(path.join(rootDir, 'public')));
+
+// ----------------------------
+// Routes
+// ----------------------------
+// Note: In MVC, routes map HTTP requests to controller methods.
 app.use('/admin', adminRoutes);
+app.use(shopRoutes);
 
-app.use((req, res, next) => {
-    res.status(404).render('404', { pageTitle: 'Page Not Found' });
-});
+// 404 page route
+app.use(errorController.get404);
 
+// ----------------------------
+// Start Server
+// ----------------------------
 app.listen(3000, () => {
-    console.log('Server running on port 3000');
+  console.log('Server running on http://localhost:3000');
 });

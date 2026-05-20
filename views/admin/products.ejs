@@ -1,0 +1,24 @@
+<%- include('../includes/head') %>
+<%- include('../includes/navigation') %>
+<main class="product-list">
+  <h1>Admin: Products</h1>
+  <% if (prods.length === 0) { %>
+    <p>No products found. Add one from the admin area.</p>
+  <% } else { %>
+    <ul>
+      <% prods.forEach(product => { %>
+        <li>
+          <div class="product-card">
+            <img src="<%= product.imageUrl %>" alt="<%= product.title %>" />
+            <div class="product-info">
+              <h2><%= product.title %></h2>
+              <p><%= product.description %></p>
+              <span class="price">$<%= product.price %></span>
+            </div>
+          </div>
+        </li>
+      <% }); %>
+    </ul>
+  <% } %>
+</main>
+<%- include('../includes/end') %>
