@@ -1,4 +1,5 @@
 const Product = require('../models/product');
+const Cart = require('../models/cart');
 
 // Controller for shop-facing pages.
 // This is the "C" in MVC for all customer-facing requests.
@@ -10,6 +11,18 @@ exports.getProducts = (req, res, next) => {
       path: '/products',
       formsCSS: false,
       productCSS: false
+    });
+  });
+};
+
+exports.postCart = (req, res, next) => {
+  const prodId = req.body.productId;
+  Product.findById(prodId, product => {
+    if (!product) {
+      return res.redirect('/products');
+    }
+    Cart.addProduct(prodId, product.price, () => {
+      res.redirect('/cart');
     });
   });
 };
@@ -27,11 +40,31 @@ exports.getIndex = (req, res, next) => {
 };
 
 exports.getCart = (req, res, next) => {
-  res.render('shop/cart', {
-    path: '/cart',
-    pageTitle: 'Your Cart',
-    formsCSS: false,
-    productCSS: false
+  Cart.getCart(cart => {
+    Product.fetchAll(products => {
+      const cartProducts = [];
+      for (const product of products) {
+        const cartProductData = cart.products.find(prod => prod.id === product.id);
+        if (cartProductData) {
+          cartProducts.push({ productData: product, qty: cartProductData.qty });
+        }
+      }
+
+      res.render('shop/cart', {
+        path: '/cart',
+        pageTitle: 'Your Cart',
+        formsCSS: false,
+        productCSS: false,
+        products: cartProducts
+      });
+    });
+  });
+};
+
+exports.postCartDelete = (req, res, next) => {
+  const prodId = req.body.productId;
+  Cart.removeProduct(prodId, () => {
+    res.redirect('/cart');
   });
 };
 
