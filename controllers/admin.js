@@ -1,7 +1,7 @@
 const Product = require('../models/product');
 
-// Controller for admin-related actions.
-// In MVC, controllers receive requests, interact with models, and return a view.
+// Controller for admin-facing actions.
+// Admin controllers handle product creation, deletion, and listing.
 exports.getAddProduct = (req, res, next) => {
   res.render('admin/add-product', {
     pageTitle: 'Add Product',
@@ -12,32 +12,42 @@ exports.getAddProduct = (req, res, next) => {
   });
 };
 
-exports.postAddProduct = (req, res, next) => {
+exports.postAddProduct = async (req, res, next) => {
   const title = req.body.title;
   const imageUrl = req.body.imageUrl;
   const price = req.body.price;
   const description = req.body.description;
 
   const product = new Product(title, imageUrl, description, price);
-  product.save();
 
-  // After saving the product, redirect to the shop home page.
-  res.redirect('/');
+  try {
+    await product.save();
+    res.redirect('/');
+  } catch (err) {
+    next(err);
+  }
 };
 
-exports.postDeleteProduct = (req, res, next) => {
+exports.postDeleteProduct = async (req, res, next) => {
   const prodId = req.body.productId;
-  Product.deleteById(prodId, () => {
+
+  try {
+    await Product.deleteById(prodId);
     res.redirect('/admin/products');
-  });
+  } catch (err) {
+    next(err);
+  }
 };
 
-exports.getProducts = (req, res, next) => {
-  Product.fetchAll(products => {
+exports.getProducts = async (req, res, next) => {
+  try {
+    const products = await Product.fetchAll();
     res.render('admin/products', {
       prods: products,
       pageTitle: 'Admin Products',
       path: '/admin/products'
     });
-  });
+  } catch (err) {
+    next(err);
+  }
 };

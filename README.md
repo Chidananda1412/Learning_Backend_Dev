@@ -30,3 +30,29 @@ This project demonstrates an Express.js application using the MVC architecture.
    npm start
    ```
 3. Open http://localhost:3000 in your browser.
+
+## Project Structure
+
+- `app.js`: Application entry point and Express setup.
+- `controllers/`: Request handlers (MVC controllers).
+- `models/`: Data models and database access logic.
+- `routes/`: Route definitions mapping URLs to controllers.
+- `views/`: EJS templates used to render pages.
+- `public/`: Static assets (CSS, client JS, images).
+- `util/`: Utility helpers (DB connection, path helpers).
+- `data/`: Legacy JSON data storage (not used when DB is enabled).
+
+## Contributing / Quick Guidelines
+
+- Run the app locally:
+
+   ```bash
+   npm install
+   npm start
+   ```
+
+- Code style: follow existing project patterns (CommonJS modules, async/await for DB calls).
+- Database: MySQL connection is configured in `util/database.js`. Make sure your local MySQL server is running and credentials are correct.
+- Pull requests: open feature branches, keep changes focused, and include a short description of the intent.
+
+If you'd like, I can add a more detailed `CONTRIBUTING.md` with commit message conventions and review checklist.

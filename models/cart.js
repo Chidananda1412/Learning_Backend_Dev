@@ -1,65 +1,34 @@
-const fs = require('fs');
-const path = require('path');
-const rootDir = require('../util/path');
-
-const cartFilePath = path.join(rootDir, 'data', 'cart.json');
-
-const getCartFromFile = cb => {
-  fs.readFile(cartFilePath, (err, fileContent) => {
-    if (err) {
-      return cb({ products: [] });
-    }
-    cb(JSON.parse(fileContent));
-  });
-};
+const db = require('../util/database');
 
 module.exports = class Cart {
-  static addProduct(id, productPrice, cb) {
-    getCartFromFile(cart => {
-      const updatedCart = { ...cart };
-      const existingProductIndex = updatedCart.products.findIndex(prod => prod.id === id);
-      const existingProduct = updatedCart.products[existingProductIndex];
+  // Add a product to the cart or increment the quantity if it already exists.
+  static async addProduct(id, productPrice) {
+    const [rows] = await db.execute('SELECT id, qty FROM cart_items WHERE product_id = ?', [id]);
 
-      if (existingProduct) {
-        existingProduct.qty += 1;
-      } else {
-        updatedCart.products.push({ id, qty: 1, price: productPrice });
-      }
+    if (rows && rows.length > 0) {
+      const item = rows[0];
+      return db.execute('UPDATE cart_items SET qty = ? WHERE id = ?', [item.qty + 1, item.id]);
+    }
 
-      fs.writeFile(cartFilePath, JSON.stringify(updatedCart, null, 2), err => {
-        if (err) {
-          console.error('Failed to save cart:', err);
-        }
-        cb();
-      });
-    });
+    return db.execute('INSERT INTO cart_items (product_id, qty) VALUES (?, ?)', [id, 1]);
   }
 
-  static removeProduct(id, cb) {
-    getCartFromFile(cart => {
-      const updatedCart = { ...cart };
-      const existingProductIndex = updatedCart.products.findIndex(prod => prod.id === id);
-      if (existingProductIndex < 0) {
-        return cb();
-      }
+  // Remove one quantity of the product from the cart, or delete the row if quantity reaches zero.
+  static async removeProduct(id) {
+    const [rows] = await db.execute('SELECT id, qty FROM cart_items WHERE product_id = ?', [id]);
+    if (!rows || rows.length === 0) return;
 
-      const existingProduct = updatedCart.products[existingProductIndex];
-      existingProduct.qty -= 1;
+    const item = rows[0];
+    if (item.qty > 1) {
+      return db.execute('UPDATE cart_items SET qty = ? WHERE id = ?', [item.qty - 1, item.id]);
+    }
 
-      if (existingProduct.qty <= 0) {
-        updatedCart.products.splice(existingProductIndex, 1);
-      }
-
-      fs.writeFile(cartFilePath, JSON.stringify(updatedCart, null, 2), err => {
-        if (err) {
-          console.error('Failed to update cart:', err);
-        }
-        cb();
-      });
-    });
+    return db.execute('DELETE FROM cart_items WHERE id = ?', [item.id]);
   }
 
-  static getCart(cb) {
-    getCartFromFile(cb);
+  // Get the cart contents with product ids and quantities.
+  static async getCart() {
+    const [rows] = await db.execute('SELECT product_id AS id, qty FROM cart_items');
+    return { products: rows.map(r => ({ id: r.id, qty: r.qty })) };
   }
 };

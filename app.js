@@ -5,13 +5,14 @@ const adminRoutes = require('./routes/admin');
 const shopRoutes = require('./routes/shop');
 const errorController = require('./controllers/error');
 const rootDir = require('./util/path');
+const db = require('./util/database'); // initialize DB connection and ensure tables exist
 
 const app = express();
 
 // ----------------------------
 // View Engine Configuration
 // ----------------------------
-// EJS is used to render dynamic HTML pages from the `views/` folder.
+// EJS templates are rendered from the `views/` directory.
 app.set('view engine', 'ejs');
 app.set('views', path.join(rootDir, 'views'));
 
@@ -21,17 +22,17 @@ app.set('views', path.join(rootDir, 'views'));
 // Parse incoming URL-encoded form data and make it available under req.body.
 app.use(express.urlencoded({ extended: false }));
 
-// Serve static assets from the public directory.
+// Serve static files such as CSS and client JavaScript from `public/`.
 app.use(express.static(path.join(rootDir, 'public')));
 
 // ----------------------------
 // Routes
 // ----------------------------
-// Note: In MVC, routes map HTTP requests to controller methods.
+// Routes delegate request handling to controller functions.
 app.use('/admin', adminRoutes);
 app.use(shopRoutes);
 
-// 404 page route
+// Handle unmatched routes with a 404 page.
 app.use(errorController.get404);
 
 // ----------------------------

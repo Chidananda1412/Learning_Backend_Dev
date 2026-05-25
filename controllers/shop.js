@@ -1,10 +1,11 @@
 const Product = require('../models/product');
 const Cart = require('../models/cart');
 
-// Controller for shop-facing pages.
-// This is the "C" in MVC for all customer-facing requests.
-exports.getProducts = (req, res, next) => {
-  Product.fetchAll(products => {
+// Controller for customer-facing shop pages.
+// Handles product browsing, cart management, and checkout views.
+exports.getProducts = async (req, res, next) => {
+  try {
+    const products = await Product.fetchAll();
     res.render('shop/product-list', {
       prods: products,
       pageTitle: 'All Products',
@@ -12,23 +13,30 @@ exports.getProducts = (req, res, next) => {
       formsCSS: false,
       productCSS: false
     });
-  });
+  } catch (err) {
+    next(err);
+  }
 };
 
-exports.postCart = (req, res, next) => {
+exports.postCart = async (req, res, next) => {
   const prodId = req.body.productId;
-  Product.findById(prodId, product => {
+
+  try {
+    const product = await Product.findById(prodId);
     if (!product) {
       return res.redirect('/products');
     }
-    Cart.addProduct(prodId, product.price, () => {
-      res.redirect('/cart');
-    });
-  });
+
+    await Cart.addProduct(prodId, product.price);
+    res.redirect('/cart');
+  } catch (err) {
+    next(err);
+  }
 };
 
-exports.getIndex = (req, res, next) => {
-  Product.fetchAll(products => {
+exports.getIndex = async (req, res, next) => {
+  try {
+    const products = await Product.fetchAll();
     res.render('shop/index', {
       prods: products,
       pageTitle: 'Shop',
@@ -36,36 +44,46 @@ exports.getIndex = (req, res, next) => {
       formsCSS: false,
       productCSS: false
     });
-  });
+  } catch (err) {
+    next(err);
+  }
 };
 
-exports.getCart = (req, res, next) => {
-  Cart.getCart(cart => {
-    Product.fetchAll(products => {
-      const cartProducts = [];
-      for (const product of products) {
-        const cartProductData = cart.products.find(prod => prod.id === product.id);
-        if (cartProductData) {
-          cartProducts.push({ productData: product, qty: cartProductData.qty });
-        }
+exports.getCart = async (req, res, next) => {
+  try {
+    const cart = await Cart.getCart();
+    const products = await Product.fetchAll();
+    const cartProducts = [];
+
+    // Match each product with its quantity in the cart.
+    for (const product of products) {
+      const cartProductData = cart.products.find(prod => prod.id === product.id);
+      if (cartProductData) {
+        cartProducts.push({ productData: product, qty: cartProductData.qty });
       }
+    }
 
-      res.render('shop/cart', {
-        path: '/cart',
-        pageTitle: 'Your Cart',
-        formsCSS: false,
-        productCSS: false,
-        products: cartProducts
-      });
+    res.render('shop/cart', {
+      path: '/cart',
+      pageTitle: 'Your Cart',
+      formsCSS: false,
+      productCSS: false,
+      products: cartProducts
     });
-  });
+  } catch (err) {
+    next(err);
+  }
 };
 
-exports.postCartDelete = (req, res, next) => {
+exports.postCartDelete = async (req, res, next) => {
   const prodId = req.body.productId;
-  Cart.removeProduct(prodId, () => {
+
+  try {
+    await Cart.removeProduct(prodId);
     res.redirect('/cart');
-  });
+  } catch (err) {
+    next(err);
+  }
 };
 
 exports.getOrders = (req, res, next) => {

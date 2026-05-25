@@ -1,18 +1,4 @@
-const fs = require('fs');
-const path = require('path');
-const rootDir = require('../util/path');
-
-// Path to the JSON file used as a simple flat-file database.
-const dataFile = path.join(rootDir, 'data', 'products.json');
-
-const getProductsFromFile = cb => {
-  fs.readFile(dataFile, (err, fileContent) => {
-    if (err) {
-      return cb([]);
-    }
-    cb(JSON.parse(fileContent));
-  });
-};
+const db = require('../util/database');
 
 module.exports = class Product {
   constructor(title, imageUrl, description, price, id = null) {
@@ -23,40 +9,42 @@ module.exports = class Product {
     this.id = id;
   }
 
+  // Saves a new product or updates an existing one based on the presence of an id.
   save() {
-    getProductsFromFile(products => {
-      if (!this.id) {
-        this.id = Math.random().toString(36).substr(2, 9) + Date.now();
-      }
-      products.push(this);
-      fs.writeFile(dataFile, JSON.stringify(products, null, 2), err => {
-        if (err) {
-          console.error('Failed to save product:', err);
+    if (this.id) {
+      return db.execute(
+        'UPDATE products SET title = ?, imageUrl = ?, price = ?, description = ? WHERE id = ?',
+        [this.title, this.imageUrl, this.price, this.description, this.id]
+      );
+    }
+
+    return db
+      .execute('INSERT INTO products (title, imageUrl, price, description) VALUES (?, ?, ?, ?)', [
+        this.title,
+        this.imageUrl,
+        this.price,
+        this.description
+      ])
+      .then(([result]) => {
+        if (result && result.insertId) {
+          this.id = result.insertId;
         }
+        return result;
       });
-    });
   }
 
-  static fetchAll(cb) {
-    getProductsFromFile(cb);
+  // Returns all products from the database.
+  static fetchAll() {
+    return db.execute('SELECT * FROM products').then(([rows]) => rows);
   }
 
-  static findById(id, cb) {
-    getProductsFromFile(products => {
-      const product = products.find(prod => prod.id === id);
-      cb(product);
-    });
+  // Finds a single product by its id.
+  static findById(id) {
+    return db.execute('SELECT * FROM products WHERE id = ?', [id]).then(([rows]) => rows[0]);
   }
 
-  static deleteById(id, cb) {
-    getProductsFromFile(products => {
-      const updatedProducts = products.filter(prod => prod.id !== id);
-      fs.writeFile(dataFile, JSON.stringify(updatedProducts, null, 2), err => {
-        if (err) {
-          console.error('Failed to delete product:', err);
-        }
-        cb();
-      });
-    });
+  // Deletes a product by its id.
+  static deleteById(id) {
+    return db.execute('DELETE FROM products WHERE id = ?', [id]);
   }
 };

@@ -1,6 +1,6 @@
 const path = require('path');
 
-// This helper function returns the root directory path for the application.
-// It keeps path calculation in one place and is used by app.js and the model.
+// Returns the application's root directory path.
+// This helper keeps path logic centralized for use in app.js and other modules.
 module.exports = path.dirname(process.mainModule.filename);
 
