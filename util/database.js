@@ -1,3 +1,10 @@
+/**
+ * Low-level MySQL connection utility using `mysql2`.
+ *
+ * This module exposes a promise-based connection pool (`db`) for any
+ * remaining raw-SQL operations in the project. Note: after moving models
+ * to Sequelize, most persistence should go through Sequelize instead.
+ */
 const mysql = require('mysql2');
 
 // Create a connection pool for MySQL.
@@ -11,9 +18,12 @@ const pool = mysql.createPool({
   queueLimit: 0
 });
 
+// Export the promise wrapper so callers can use `await db.execute(...)`.
 const db = pool.promise();
 
-// Create required tables on startup if they do not exist.
+// Create required tables on startup if they do not exist. This mirrors the
+// schema used by Sequelize models, and is safe to run even if Sequelize is
+// also performing `sync()` — both use `CREATE TABLE IF NOT EXISTS` semantics.
 async function ensureTables() {
   try {
     await db.execute(`

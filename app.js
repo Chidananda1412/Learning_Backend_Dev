@@ -12,7 +12,8 @@ const app = express();
 // ----------------------------
 // View Engine Configuration
 // ----------------------------
-// EJS templates are rendered from the `views/` directory.
+// EJS templates are rendered from the `views/` directory. Controllers
+// call `res.render(view, data)` to populate templates with dynamic data.
 app.set('view engine', 'ejs');
 app.set('views', path.join(rootDir, 'views'));
 
@@ -38,6 +39,10 @@ app.use(errorController.get404);
 // ----------------------------
 // Start Server
 // ----------------------------
+// Note: If you need to wait for Sequelize `initPromise` before accepting
+// requests, change this file to `await initPromise` (or use `.then`) and
+// start the server after the DB is ready. For now the app starts immediately
+// and database migration/creation logic runs in the background.
 app.listen(3000, () => {
   console.log('Server running on http://localhost:3000');
 });

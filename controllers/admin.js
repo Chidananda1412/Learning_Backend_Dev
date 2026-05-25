@@ -1,5 +1,14 @@
 const Product = require('../models/product');
 
+/**
+ * Admin controller
+ *
+ * Responsibilities:
+ *  - Render admin pages for creating and listing products
+ *  - Handle form submissions for adding and deleting products
+ *
+ * All handlers are async and forward errors to the `next` middleware.
+ */
 // Controller for admin-facing actions.
 // Admin controllers handle product creation, deletion, and listing.
 exports.getAddProduct = (req, res, next) => {
